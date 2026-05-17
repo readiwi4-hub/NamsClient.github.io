@@ -7,7 +7,26 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="page-shell">
+  <!-- Модальное окно для ввода ключа -->
+  <div class="auth-modal" id="authModal">
+    <div class="auth-container">
+      <h2>Введите ключ доступа</h2>
+      <p class="auth-subtitle">Для доступа к сайту требуется валидный ключ</p>
+      <form id="authForm">
+        <input 
+          type="password" 
+          id="keyInput" 
+          placeholder="NAMSKEY-..." 
+          autocomplete="off"
+          required
+        />
+        <button type="submit" class="button button--primary">Подтвердить</button>
+      </form>
+      <div id="errorMsg" class="error-message"></div>
+    </div>
+  </div>
+
+  <div class="page-shell" id="pageShell" style="display: none;">
     <header class="hero">
       <div class="hero__badge">NAMS CLIENT</div>
       <h1>1.16.5 Fabric</h1>
@@ -82,5 +101,43 @@
       <span>Работает на Minecraft 1.16.5 Fabric</span>
     </footer>
   </div>
+
+  <script>
+    // Валидные ключи доступа
+    const VALID_KEYS = [
+      'NAMSKEY-29SCl-XE5BJS-S33KD',
+      'NAMSKEY-29SCL-XEVCXS2-PRIVATE',
+      'NAMSPRIVATE-KEY-9CvLDD'
+    ];
+
+    const authModal = document.getElementById('authModal');
+    const pageShell = document.getElementById('pageShell');
+    const authForm = document.getElementById('authForm');
+    const keyInput = document.getElementById('keyInput');
+    const errorMsg = document.getElementById('errorMsg');
+
+    // Проверяем, был ли уже введен ключ
+    if (localStorage.getItem('namsKeyAuthed') === 'true') {
+      authModal.style.display = 'none';
+      pageShell.style.display = '';
+    }
+
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const enteredKey = keyInput.value.trim();
+
+      if (VALID_KEYS.includes(enteredKey)) {
+        // Ключ верный
+        localStorage.setItem('namsKeyAuthed', 'true');
+        authModal.style.display = 'none';
+        pageShell.style.display = '';
+        errorMsg.textContent = '';
+      } else {
+        // Ключ неверный
+        errorMsg.textContent = 'Неверный ключ доступа';
+        keyInput.value = '';
+      }
+    });
+  </script>
 </body>
 </html>
